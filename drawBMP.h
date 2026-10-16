@@ -1,5 +1,5 @@
-#ifndef drawBMP_h
-#define drawBMP_H
+#ifndef DRAWBMP_H
+#define DRAWBMP_H
 
 #include <cstdint>
 #include <vector>
