@@ -36,7 +36,7 @@ struct Pixel {
     uint8_t red{0};
 };
 
-void drawBMP(string filename, int width, int height, vector<Pixel> pixels) {
+void drawBMP(string filename, int width, int height, vector<Pixel> pixels, bool flipped) {
     ofstream BMPfin;
     BMPfin.open(filename, ios::binary);
 
@@ -62,14 +62,26 @@ void drawBMP(string filename, int width, int height, vector<Pixel> pixels) {
     BMPfin.write(reinterpret_cast<const char*>(&infoHeader), sizeof(infoHeader));
 
     uint8_t paddingBytes[3] = {0, 0, 0};
-    for(int y = 0; y < height; y++) {
-        // Get the index of the first pixel of each row and write the entire row in one go
-        int rowIndex = y * width;
-        BMPfin.write(reinterpret_cast<const char*>(&pixels[rowIndex]), padded_row_size - padding);
-        if(padding > 0) {
-            BMPfin.write(reinterpret_cast<const char*>(paddingBytes), padding);
+    if(!flipped) {
+        for(int y = 0; y < height; y++) {
+            // Get the index of the first pixel of each row and write the entire row in one go
+            int rowIndex = y * width;
+            BMPfin.write(reinterpret_cast<const char*>(&pixels[rowIndex]), padded_row_size - padding);
+            if(padding > 0) {
+                BMPfin.write(reinterpret_cast<const char*>(paddingBytes), padding);
+            }
+        }
+    } else {
+        for(int y = height-1; y >=0; y--) {
+            // Get the index of the first pixel of each row and write the entire row in one go
+            int rowIndex = y * width;
+            BMPfin.write(reinterpret_cast<const char*>(&pixels[rowIndex]), padded_row_size - padding);
+            if(padding > 0) {
+                BMPfin.write(reinterpret_cast<const char*>(paddingBytes), padding);
+            }
         }
     }
+    
 
     BMPfin.close();
 }

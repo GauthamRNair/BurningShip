@@ -11,6 +11,7 @@ using namespace std;
 int main() {
     vector<Pixel> pixels(IMAGE_WIDTH * IMAGE_HEIGHT);
 
+    #pragma omp parallel for schedule(dynamic, 1)
     for (int y = 0; y < IMAGE_HEIGHT; y++) {
         for (int x = 0; x < IMAGE_WIDTH; x++) {
             int pixelIndex = y*IMAGE_WIDTH + x;
@@ -21,11 +22,11 @@ int main() {
 
             pixels[pixelIndex] = burningShip(x, y, MAX_ITERATIONS);
         }
-        if((y+1) % 5 == 0) {
+        if((y+1) % 20 == 0) {
             cout << "Row (" << y+1 << "/" << IMAGE_HEIGHT << ") Completed\n";
         }
     }
 
-    drawBMP("output.bmp", IMAGE_WIDTH, IMAGE_HEIGHT, pixels);
+    drawBMP("output.bmp", IMAGE_WIDTH, IMAGE_HEIGHT, pixels, true);
     return 0;
 }

@@ -5,30 +5,31 @@
 #include "consts.h"
 #include <cstdint>
 #include <cmath>
+#include <algorithm>
 
-const float SCALE_FACTORX = 3.5 / IMAGE_WIDTH;
-const float SCALE_FACTORY = 3.0 / IMAGE_HEIGHT;
+const double SCALE_FACTORX = 3.5 / IMAGE_WIDTH;
+const double SCALE_FACTORY = 3.0 / IMAGE_HEIGHT;
 
 struct ComplexPoint {
-    float r{0.0}; // Real component
-    float i{0.0}; // Imaginary component
+    double r{0.0}; // Real component
+    double i{0.0}; // Imaginary component
 };
 
 Pixel burningShip(int x, int y, int maxIterations) {
     ComplexPoint c{
-        static_cast<float>(x * SCALE_FACTORX) - 2.2f, 
-        static_cast<float>(y * SCALE_FACTORY) - 2.0f
+        static_cast<double>(x * SCALE_FACTORX) - 2.2, 
+        static_cast<double>(y * SCALE_FACTORY) - 2.0
     };
 
     // Use c as the starting point
     ComplexPoint z = c;
-    float zr2 = z.r*z.r;
-    float zi2 = z.i*z.i;
+    double zr2 = z.r*z.r;
+    double zi2 = z.i*z.i;
 
     int iteration = 0;
     while (zr2 + zi2 <= 4.0f && iteration < maxIterations) {
-        float zrn = zr2 - zi2 + c.r;
-        float zin = abs(2.0f*z.r*z.i) + c.i;
+        double zrn = zr2 - zi2 + c.r;
+        double zin = abs(2.0f*z.r*z.i) + c.i;
         
         z.r = zrn;
         z.i = zin;
@@ -45,12 +46,15 @@ Pixel burningShip(int x, int y, int maxIterations) {
         };
     }
 
+    double smoothIteration = iteration + 1.0 - log2(log2(sqrt(zr2*zi2)));
+
+    const float t = smoothIteration * 0.48f;
+
     // Otherwise it's not in the set
-    float ratio = static_cast<float>(maxIterations-iteration) / maxIterations;
     return Pixel{
-        20,
-        static_cast<uint8_t>(100*ratio), 
-        static_cast<uint8_t>(200*ratio)
+        static_cast<uint8_t>(30.0f + 25.0f * std::cos(6.0f * t + 0.0f)),
+        static_cast<uint8_t>(100.0f + 55.0f * std::cos(6.0f * t + 0.0f)),
+        static_cast<uint8_t>(200.0f + 55.0f * std::cos(6.0f * t + 0.0f))
     };
 }
 
