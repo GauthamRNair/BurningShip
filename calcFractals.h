@@ -2,31 +2,39 @@
 #define CALCFRACTALS_H
 
 #include "drawBMP.h"
+#include "consts.h"
 #include <cstdint>
 #include <cmath>
 
+const float SCALE_FACTORX = 3.5 / IMAGE_WIDTH;
+const float SCALE_FACTORY = 3.0 / IMAGE_HEIGHT;
+
 struct ComplexPoint {
-    double r{0.0}; // Real component
-    double i{0.0}; // Imaginary component
+    float r{0.0}; // Real component
+    float i{0.0}; // Imaginary component
 };
 
-Pixel burningShip(int x, int y, int width, int height, int maxIterations) {
+Pixel burningShip(int x, int y, int maxIterations) {
     ComplexPoint c{
-        ((x * 3.5) / width) - 2.2, 
-        ((y * 3.0) / height) - 2.0
+        static_cast<float>(x * SCALE_FACTORX) - 2.2f, 
+        static_cast<float>(y * SCALE_FACTORY) - 2.0f
     };
 
     // Use c as the starting point
     ComplexPoint z = c;
+    float zr2 = z.r*z.r;
+    float zi2 = z.i*z.i;
 
     int iteration = 0;
-    while (z.r * z.r + z.i * z.i <= 4 && iteration < maxIterations) {
-        ComplexPoint new_z = {
-            z.r*z.r - z.i*z.i + c.r,
-            fabs(2*z.r*z.i) + c.i
-        };
-        z = new_z;
+    while (zr2 + zi2 <= 4.0f && iteration < maxIterations) {
+        float zrn = zr2 - zi2 + c.r;
+        float zin = abs(2.0f*z.r*z.i) + c.i;
+        
+        z.r = zrn;
+        z.i = zin;
 
+        zr2 = z.r*z.r;
+        zi2 = z.i*z.i;
         iteration++;
     };
 
@@ -38,10 +46,11 @@ Pixel burningShip(int x, int y, int width, int height, int maxIterations) {
     }
 
     // Otherwise it's not in the set
+    float ratio = static_cast<float>(maxIterations-iteration) / maxIterations;
     return Pixel{
-        0,
-        static_cast<uint8_t>(100*static_cast<double>(maxIterations-iteration) / maxIterations), 
-        static_cast<uint8_t>(200*static_cast<double>(maxIterations-iteration) / maxIterations)
+        20,
+        static_cast<uint8_t>(100*ratio), 
+        static_cast<uint8_t>(200*ratio)
     };
 }
 
