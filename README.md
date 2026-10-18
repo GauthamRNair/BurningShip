@@ -12,7 +12,7 @@ To customize the width, height, or the maximum number of iterations, you can edi
 
 After editing, you can rerender the .bmp with
 ```bash
-g++ main.cpp -O3 -march=native -ffast-math -fopenmp -o burningShip.exe && burningShip.exe
+g++ main.cpp -O3 -march=native -ffast-math -fopenmp -o burningShip.exe; burningShip.exe
 ```
 (The console logging may be a bit broken because it can use multiple CPU threads)
 
